@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Pramaan">
+  <rect width="32" height="32" rx="7" fill="#F3EFE6"/>
+  <rect x="2" y="2" width="28" height="28" rx="5.5" fill="none" stroke="#1B3A4B" stroke-width="2"/>
+  <rect x="5" y="5" width="22" height="22" rx="2.5" fill="none" stroke="#4A6FA5" stroke-width="0.9"/>
+  <path fill="#1B3A4B" d="M10 8h8.2c3.9 0 6.5 2.15 6.5 5.65 0 3.5-2.6 5.65-6.5 5.65H13.6V24H10V8zm3.6 3v5.1h4.4c2 0 3.2-1.05 3.2-2.55S19.99 11 18 11h-4.4z"/>
+</svg>

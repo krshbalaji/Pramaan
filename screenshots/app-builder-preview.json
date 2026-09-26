@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "Pramaan",
+      "hasCanvas": false,
+      "bodyTextLen": 156,
+      "bodyTextHash": "7790f572ad57f1b4b3ca0685f04b97dd4d157f210a1e012a3ef8e865997293af",
+      "bodyTextPrefix": "GST COMPLIANCE Pramaan Raise GST-ready invoices, generate sandbo",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "Pramaan",
+      "hasCanvas": false,
+      "bodyTextLen": 156,
+      "bodyTextHash": "7790f572ad57f1b4b3ca0685f04b97dd4d157f210a1e012a3ef8e865997293af",
+      "bodyTextPrefix": "GST COMPLIANCE Pramaan Raise GST-ready invoices, generate sandbo",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/app-builder-preview.json"
+}

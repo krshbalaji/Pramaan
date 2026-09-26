@@ -1,0 +1,8 @@
+stamp=20260925-102402
+created_utc=2026-09-25T10:24:57Z
+archive=/home/workdir/checkpoints/pramaan-gst-checkpoint-20260925-102402.tar.gz
+workspace_copy=/workspace/artifacts/checkpoints/pramaan-gst-checkpoint-20260925-102402.tar.gz
+report=/home/workdir/checkpoints/CHECKPOINT-20260925-102402.md
+bytes=2021818
+sha256=46b468ae003ef391371366ae37d6867b067f8fb2b76f569645fa700d80024ef9
+entries=175
