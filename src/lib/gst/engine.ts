@@ -1,4 +1,4 @@
-import { COMPOSITION_RATES, findPreset, type TaxScheme } from "./catalog";
+import { COMPOSITION_RATES, findPreset, type TaxScheme } from "./catalog.ts";
 
 export function roundMoney(n: number) {
   return Math.round((n + Number.EPSILON) * 100) / 100;
@@ -25,6 +25,12 @@ export type TaxResult = {
   compositionTax: number;
   docTitle: string;
 };
+
+/** Preset total rate (18% Inter and 18% Intra both yield 0.18). Not rounded — 5% halves are 0.025. */
+export function presetRate(presetName: string): number {
+  const preset = findPreset(presetName);
+  return Math.max(preset.igst, preset.cgst + preset.sgst);
+}
 
 export function computeTax(opts: {
   presetName: string;
@@ -56,14 +62,17 @@ export function computeTax(opts: {
     };
   }
 
+  // Rate comes from the preset; CGST/SGST vs IGST comes from place of supply.
+  const rate = presetRate(opts.presetName);
+
   if (inter) {
-    const igst = roundMoney(taxable * preset.igst);
+    const igst = roundMoney(taxable * rate);
     return {
       scheme: "REGULAR",
       supplyType,
       cgstRate: 0,
       sgstRate: 0,
-      igstRate: preset.igst,
+      igstRate: rate,
       cgst: 0,
       sgst: 0,
       igst,
@@ -75,14 +84,15 @@ export function computeTax(opts: {
     };
   }
 
-  const cgst = roundMoney(taxable * preset.cgst);
-  const sgst = roundMoney(taxable * preset.sgst);
+  const half = rate / 2;
+  const cgst = roundMoney(taxable * half);
+  const sgst = roundMoney(taxable * half);
   const totalTax = roundMoney(cgst + sgst);
   return {
     scheme: "REGULAR",
     supplyType,
-    cgstRate: preset.cgst,
-    sgstRate: preset.sgst,
+    cgstRate: half,
+    sgstRate: half,
     igstRate: 0,
     cgst,
     sgst,
