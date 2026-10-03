@@ -16,10 +16,11 @@ import { isMigrationFile } from "./scripts/migration-plan.mjs";
 
 const require = createRequire(import.meta.url);
 
-function pglitePreviewAssetsModule(): NitroModule {
+function pglitePreviewAssetsModule(): Plugin & { nitro: NitroModule } {
   return {
     name: "app-builder:pglite-preview-assets",
-    setup(nitro) {
+    nitro: {
+      setup(nitro) {
       nitro.hooks.hook("compiled", () => {
         const outputDir = nitro.options.output.dir;
         const functionLibDir = join(outputDir, "functions", "__server.func", "_libs");
@@ -43,6 +44,7 @@ function pglitePreviewAssetsModule(): NitroModule {
           `PGLite runtime assets copied to ${functionLibDir}`,
         );
       });
+      },
     },
   };
 }
