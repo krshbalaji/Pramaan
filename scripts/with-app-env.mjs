@@ -13,7 +13,7 @@
  *
  * That precedence also means the file governs this workspace only. A deployed
  * build runs with the provider's project env, where the deployer sets
- * `VITE_AUTH_ENABLED` itself (today unconditionally `"true"`), so the deployed
+ * `VITE_AUTH_ENABLED` itself (today unconditionally "true"), so the deployed
  * flag is the platform's, not this file's.
  *
  * Vite picks the values up because `loadEnv` prefix-matches entries already in
@@ -104,6 +104,23 @@ export function isMainModule(moduleUrl) {
   }
 }
 
+/**
+ * Build the command/argument pair used by spawn().
+ *
+ * Windows command shims such as node_modules/.bin/vite.cmd are resolved by
+ * cmd.exe; spawning "vite" directly is not enough on Windows and results in
+ * ENOENT. Other platforms continue to spawn the command directly.
+ */
+export function spawnSpec(command, args, platform = process.platform, comSpec = process.env.ComSpec || "cmd.exe") {
+  if (platform !== "win32") {
+    return { command, args };
+  }
+  return {
+    command: comSpec,
+    args: ["/d", "/s", "/c", command, ...args],
+  };
+}
+
 function main(argv) {
   const [command, ...args] = argv;
   if (!command) {
@@ -111,7 +128,8 @@ function main(argv) {
     process.exit(2);
   }
   const env = mergeAppEnv(readAppEnv(projectRoot()), process.env);
-  const child = spawn(command, args, { stdio: "inherit", env });
+  const spec = spawnSpec(command, args);
+  const child = spawn(spec.command, spec.args, { stdio: "inherit", env });
   // The dev server is long-running and is stopped by signalling this wrapper.
   for (const signal of ["SIGINT", "SIGTERM", "SIGHUP"]) {
     process.on(signal, () => child.kill(signal));
