@@ -1,6 +1,8 @@
-import { readdirSync } from "node:fs";
-import { join } from "node:path";
+import { copyFileSync, existsSync, mkdirSync, readdirSync } from "node:fs";
+import { createRequire } from "node:module";
+import { dirname, join } from "node:path";
 import type { Plugin } from "vite";
+import type { NitroModule } from "nitro/types";
 import { defineConfig } from "vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
@@ -11,6 +13,41 @@ import { grokPwaPlugin } from "./scripts/grok-pwa-plugin.mjs";
 // @ts-expect-error JS plugin alongside the TS vite config
 import { appEnvPlugin } from "./scripts/app-env-plugin.mjs";
 import { isMigrationFile } from "./scripts/migration-plan.mjs";
+
+const require = createRequire(import.meta.url);
+
+function pglitePreviewAssetsModule(): Plugin & { nitro: NitroModule } {
+  return {
+    name: "app-builder:pglite-preview-assets",
+    nitro: {
+      setup(nitro) {
+      nitro.hooks.hook("compiled", () => {
+        const outputDir = nitro.options.output.dir;
+        const functionLibDir = join(outputDir, "functions", "__server.func", "_libs");
+        if (!existsSync(functionLibDir)) {
+          throw new Error(
+            `[app-builder] Expected Vercel server bundle directory was not found: ${functionLibDir}`,
+          );
+        }
+
+        const pgliteDistDir = dirname(require.resolve("@electric-sql/pglite"));
+        const assets = ["pglite.wasm", "initdb.wasm", "pglite.data"] as const;
+        mkdirSync(functionLibDir, { recursive: true });
+
+        for (const asset of assets) {
+          const source = join(pgliteDistDir, asset);
+          const target = join(functionLibDir, asset);
+          copyFileSync(source, target);
+        }
+
+        nitro.logger.info(
+          `PGLite runtime assets copied to ${functionLibDir}`,
+        );
+      });
+      },
+    },
+  };
+}
 
 /** The files `src/lib/db.ts` globs — same directory, same non-recursive scope. */
 function hasGlobbedMigrations(root: string): boolean {
@@ -159,6 +196,7 @@ export default defineConfig(({ command, isPreview }) => ({
   resolve: { tsconfigPaths: true },
   plugins: [
     pgliteBootstrapPlugin(),
+    pglitePreviewAssetsModule(),
     // Before tanstackStart so /auth/popup never falls through to the SPA.
     authPopupPlugin(),
     // Dev-only /__app-env, read by scripts/check-auth-invariant.mjs.

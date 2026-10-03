@@ -95,13 +95,16 @@ const explicitBaseURL = env("BETTER_AUTH_URL");
 // Explicit `string[]` (not a readonly tuple) — Better Auth's DynamicBaseURLConfig
 // requires a mutable `allowedHosts: string[]`.
 const previewAllowedHosts: string[] = [...PREVIEW_ALLOWED_HOSTS];
-// Local `npm run dev` (port 8080 contract). Browsers may send Origin as any of
-// these for the same server — trusting only `localhost` rejects `127.0.0.1` and
-// breaks email/password with "Invalid origin".
+// Local loopback origins for Vite dev (8080) and Nitro preview (8081).
+// Browsers may send Origin as any of these for the same local server — trusting
+// only `localhost` rejects `127.0.0.1` and breaks auth with "Invalid origin".
 const LOCAL_DEV_ORIGINS: string[] = [
   "http://localhost:8080",
   "http://127.0.0.1:8080",
   "http://[::1]:8080",
+  "http://localhost:8081",
+  "http://127.0.0.1:8081",
+  "http://[::1]:8081",
 ];
 const baseURL = explicitBaseURL ?? {
   // Include loopback hosts so dynamic baseURL resolves for local email/password
