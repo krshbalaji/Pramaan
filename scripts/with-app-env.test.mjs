@@ -11,6 +11,7 @@ import {
   parseAppEnv,
   projectRoot,
   readAppEnv,
+  spawnSpec,
 } from "./with-app-env.mjs";
 
 const execFileAsync = promisify(execFile);
@@ -125,4 +126,18 @@ test("the CLI still runs when invoked through a symlinked path", async () => {
     PRINT_FLAG,
   ]);
   assert.equal(stdout, "false");
+});
+
+test("uses cmd.exe to resolve Windows command shims", () => {
+  assert.deepEqual(spawnSpec("vite", ["dev", "--port", "8080"], "win32", "C:\\Windows\\System32\\cmd.exe"), {
+    command: "C:\\Windows\\System32\\cmd.exe",
+    args: ["/d", "/s", "/c", "vite", "dev", "--port", "8080"],
+  });
+});
+
+test("spawns commands directly on non-Windows platforms", () => {
+  assert.deepEqual(spawnSpec("vite", ["--version"], "linux", "/bin/sh"), {
+    command: "vite",
+    args: ["--version"],
+  });
 });
